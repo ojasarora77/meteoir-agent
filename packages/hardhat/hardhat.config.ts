@@ -117,6 +117,11 @@ const config: HardhatUserConfig = {
       url: "https://rpc.scroll.io",
       accounts: [deployerPrivateKey],
     },
+    reiTestnet: {
+      url: "https://rpc-testnet.rei.network",
+      accounts: [deployerPrivateKey],
+      chainId: 12357,
+    },
     celo: {
       url: "https://forno.celo.org",
       accounts: [deployerPrivateKey],
