@@ -310,11 +310,6 @@ const ThreeTextsSection = () => {
           <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold text-pink-500 leading-[0.9]">Exchange</h2>
         </div>
       </section>
-
-      {/* Hidden spacer section to provide scroll distance for animation */}
-      <section className="h-[300vh] bg-white opacity-0 pointer-events-none" aria-hidden="true">
-        {/* This invisible section provides scroll distance for the sticky animation */}
-      </section>
     </>
   );
 };
@@ -449,12 +444,72 @@ const Home: NextPage = () => {
       {/* Three Texts Section - Add, Send, Exchange */}
       <ThreeTextsSection />
 
-      {/* New Orange-Reddish Section */}
-      <section className="h-screen bg-gradient-to-br from-orange-500 to-red-500 relative">
-        <div className="container mx-auto px-6 h-full flex items-center justify-center">
-          <div className="text-center text-white">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">Ready to Get Started?</h2>
-            <p className="text-xl md:text-2xl opacity-90">Join the future of autonomous payments</p>
+      {/* New Video Section */}
+      <section className="h-screen relative flex items-center justify-center">
+        <div className="absolute inset-0 bg-white"></div>
+        <div
+          className="relative z-10 rounded-2xl overflow-hidden"
+          style={{
+            width: "calc(100% - 4rem)",
+            height: "calc(100% - 4rem)",
+            maxWidth: "1200px",
+            maxHeight: "800px",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            backdropFilter: "blur(10px)",
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            poster="/thumbnail.jpg"
+            onError={e => {
+              console.error("Video failed to load:", e);
+            }}
+            onLoadStart={() => console.log("Video loading started")}
+            aria-label="Background video showing payment interface"
+          >
+            <source src="/hero.mp4" type="video/mp4" />
+            <p>Your browser does not support the video tag. Please update your browser to view this content.</p>
+          </video>
+          <div className="absolute top-1/2 left-24 -translate-y-1/2 z-20 text-white">
+            <h2 className="text-5xl md:text-6xl font-bold leading-tight">
+              All your finances,
+              <br />
+              in one app.
+            </h2>
+            <button className="btn btn-primary bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg mt-4 text-lg shadow-none">
+              Get Started
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-orange-500 text-white p-8 rounded-lg">
+              <h3 className="text-2xl font-bold mb-4">Autonomous Payments</h3>
+              <p>
+                Connects to service APIs and executes payments instantly via stablecoins. Schedules, negotiates, and
+                optimizes microtransactions.
+              </p>
+            </div>
+            <div className="bg-orange-500 text-white p-8 rounded-lg">
+              <h3 className="text-2xl font-bold mb-4">Programmable Rules</h3>
+              <p>
+                Supports programmable rules (e.g., daily budget, approval thresholds) for granular control over
+                spending.
+              </p>
+            </div>
+            <div className="bg-orange-500 text-white p-8 rounded-lg">
+              <h3 className="text-2xl font-bold mb-4">M2M Commerce</h3>
+              <p>Enables machine-to-machine commerce, IoT, or SaaS automation without human intervention.</p>
+            </div>
           </div>
         </div>
       </section>
