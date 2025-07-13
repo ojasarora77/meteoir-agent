@@ -18,6 +18,7 @@
     "hardhat-verify": "hardhat verify",
     "lint": "eslint",
     "lint-staged": "eslint",
+    "set-budget": "hardhat run scripts/setBudget.js --network baseSepolia",
     "test": "REPORT_GAS=true hardhat test --network hardhat",
     "verify": "hardhat etherscan-verify"
   },

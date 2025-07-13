@@ -1,0 +1,72 @@
+# Rust compilation artifacts
+target/
+**/*.rs.bk
+
+# Cargo lock file (if you want to ignore it for libraries)
+# Cargo.lock
+
+# DFX build artifacts
+.dfx/
+dist/
+.vessel/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage reports
+lcov.info
+coverage/
+
+# Profiling data
+*.prof
+
+# Canister WASM files (optional - uncomment if you don't want to track compiled canisters)
+# *.wasm
+# *.wasm.gz
+
+# Node modules (if any)
+node_modules/
+
+# Deploy artifacts
+.deploy/
+deploy.log
+
+# Test artifacts
+test-results/
+coverage-reports/
+
+# Temporary build files
+*.d
+*.rlib
+
+# Flamegraph output
+flamegraph.svg
+perf.data*

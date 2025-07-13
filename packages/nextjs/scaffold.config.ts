@@ -3,7 +3,7 @@ import * as chains from "viem/chains";
 
 // Define REI Testnet custom chain
 export const reiTestnet = defineChain({
-  id: 12357,
+  id: 55556,
   name: "REI Testnet",
   nativeCurrency: {
     decimals: 18,
@@ -39,7 +39,7 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat, reiTestnet],
+  targetNetworks: [chains.hardhat, chains.baseSepolia, reiTestnet],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 30000,
   // This is ours Alchemy's default API key.

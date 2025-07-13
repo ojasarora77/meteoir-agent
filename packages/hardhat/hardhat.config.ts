@@ -120,7 +120,6 @@ const config: HardhatUserConfig = {
     reiTestnet: {
       url: "https://rpc-testnet.rei.network",
       accounts: [deployerPrivateKey],
-      chainId: 12357,
     },
     celo: {
       url: "https://forno.celo.org",

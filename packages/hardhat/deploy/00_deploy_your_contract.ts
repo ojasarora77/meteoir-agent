@@ -3,16 +3,16 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { Contract } from "ethers";
 
 /**
- * Deploys a contract named "YourContract" using the deployer account and
- * constructor arguments set to the deployer address
+ * Deploys the PaymentController contract for the Agentic Stablecoin system
+ * Constructor arguments set to the deployer address as owner
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployPaymentController: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
-    When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
+    When deploying to live networks (e.g `yarn deploy --network reiTestnet`), the deployer account
     should have sufficient balance to pay for the gas fees for contract creation.
 
     You can generate a random account with `yarn generate` or `yarn account:import` to import your
@@ -22,7 +22,11 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("YourContract", {
+  console.log("🚀 Deploying PaymentController contract...");
+  console.log("📍 Deployer address:", deployer);
+  console.log("🌐 Network:", hre.network.name);
+
+  const paymentController = await deploy("PaymentController", {
     from: deployer,
     // Contract constructor arguments
     args: [deployer],
@@ -32,13 +36,35 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
+  console.log("✅ PaymentController deployed to:", paymentController.address);
+
   // Get the deployed contract to interact with it after deploying.
-  const yourContract = await hre.ethers.getContract<Contract>("YourContract", deployer);
-  console.log("👋 Initial greeting:", await yourContract.greeting());
+  const paymentControllerContract = await hre.ethers.getContract<Contract>("PaymentController", deployer);
+  
+  console.log("👑 Contract owner:", await paymentControllerContract.owner());
+  console.log("🛡️ Emergency stop status:", await paymentControllerContract.emergencyStop());
+  console.log("📊 Total payments:", await paymentControllerContract.totalPayments());
+  console.log("🏪 Total providers:", await paymentControllerContract.totalProviders());
+  
+  // Register a demo service provider for testing
+  console.log("📝 Registering demo service provider...");
+  
+  try {
+    const demoProviderAddress = "0x1234567890123456789012345678901234567890"; // Demo address
+    const tx = await paymentControllerContract.registerServiceProvider(
+      demoProviderAddress,
+      "https://api.demo-weather.com",
+      1000000000000000 // 0.001 ETH per call
+    );
+    await tx.wait();
+    console.log("✅ Demo service provider registered!");
+  } catch (error) {
+    console.log("ℹ️ Demo provider registration skipped (already exists or error)");
+  }
 };
 
-export default deployYourContract;
+export default deployPaymentController;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["YourContract"];
+// e.g. yarn deploy --tags PaymentController
+deployPaymentController.tags = ["PaymentController"];
