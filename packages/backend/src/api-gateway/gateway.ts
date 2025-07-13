@@ -189,6 +189,9 @@ export class AgenticAPIGateway {
     this.app.get('/api/v1/monitoring/alerts', this.handleGetAlerts.bind(this));
     this.app.get('/api/v1/monitoring/provider-health', this.handleProviderHealth.bind(this));
 
+    this.app.post('/api/v1/agent/start', (req, res) => this.sendSuccessResponse(res, { message: 'Agent started' }, (req as any).requestId));
+    this.app.post('/api/v1/agent/stop', (req, res) => this.sendSuccessResponse(res, { message: 'Agent stopped' }, (req as any).requestId));
+
     // Admin endpoints
     this.app.post('/api/v1/admin/providers', this.handleCreateProvider.bind(this));
     this.app.put('/api/v1/admin/providers/:id', this.handleUpdateProvider.bind(this));
