@@ -12,7 +12,7 @@ import useDashboardData from '../../hooks/useDashboardData';
 import { useApi } from '../../hooks/useApi';
 
 export const DashboardOverview: React.FC = () => {
-  const { overview, providers, transactions, analytics, loading, error, lastUpdated, refresh, testOptimization } = useDashboardData();
+  const { overview, loading, error, lastUpdated, refresh, testOptimization } = useDashboardData();
   const { post } = useApi();
   const [agentActive, setAgentActive] = useState(false);
   const [optimizationResult, setOptimizationResult] = useState<any>(null);

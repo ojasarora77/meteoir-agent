@@ -4,11 +4,7 @@ import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
-interface ApiResponse<T> {
-  data: T | null;
-  loading: boolean;
-  error: string | null;
-}
+
 
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
