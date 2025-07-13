@@ -1,71 +1,467 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { CpuChipIcon } from "@heroicons/react/24/outline";
+import ErrorBoundary from "~~/components/ErrorBoundary";
 import { Address } from "~~/components/scaffold-eth";
+
+const UnifySection = () => {
+  const [animationProgress, setAnimationProgress] = useState(0);
+  const [shouldBeSticky, setShouldBeSticky] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Throttle scroll events for better performance
+  const throttledScrollHandler = useCallback(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const sectionTop = rect.top;
+        const sectionHeight = rect.height;
+        const windowHeight = window.innerHeight;
+        const scrollY = window.scrollY;
+        const sectionOffsetTop = sectionRef.current.offsetTop;
+
+        // Only be sticky when we're actually scrolling through the Unify section
+        const isInSectionArea =
+          scrollY >= sectionOffsetTop - windowHeight && scrollY <= sectionOffsetTop + sectionHeight;
+        setShouldBeSticky(isInSectionArea);
+
+        // Start animation much earlier when section becomes visible
+        if (sectionTop <= windowHeight * 0.5 && sectionTop + sectionHeight >= 0) {
+          // Calculate how much of the section is visible
+          const visibleStart = Math.max(0, windowHeight * 0.5 - sectionTop);
+          const visibleProgress = visibleStart / (windowHeight * 0.5);
+
+          // Animation starts immediately when section becomes 50% visible
+          const progress = Math.max(0, Math.min(1, visibleProgress));
+          setAnimationProgress(progress);
+        } else {
+          setAnimationProgress(0);
+        }
+      }
+      ticking = false;
+    };
+
+    return () => {
+      if (!ticking) {
+        requestAnimationFrame(handleScroll);
+        ticking = true;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const scrollHandler = throttledScrollHandler();
+    window.addEventListener("scroll", scrollHandler, { passive: true });
+    scrollHandler(); // Initial call
+
+    return () => window.removeEventListener("scroll", scrollHandler);
+  }, [throttledScrollHandler]);
+
+  // Images: 3 from left at different angles, 2 from right at different angles
+  const images = useMemo(
+    () => [
+      { src: "/coffee.png", alt: "Coffee payment illustration", side: "left", angle: 0 }, // top-left diagonal
+      { src: "/eur.png", alt: "Euro currency symbol", side: "left", angle: 1 }, // center-left horizontal
+      { src: "/exchange.png", alt: "Currency exchange interface", side: "left", angle: 2 }, // bottom-left diagonal
+      { src: "/jane.png", alt: "User profile interface", side: "right", angle: 0 }, // top-right diagonal
+      { src: "/person.png", alt: "Person making payment", side: "right", angle: 1 }, // bottom-right diagonal
+    ],
+    [],
+  );
+
+  const getImagePosition = useCallback(
+    (side: string, angle: number) => {
+      // Images start appearing only when animation starts
+      const moveProgress = animationProgress;
+
+      if (moveProgress === 0) {
+        return { opacity: 0, transform: "scale(0)" };
+      }
+
+      if (side === "left") {
+        // 3 images from left at LARGER angles - with staggered final positions
+        let startX, startY, finalX, finalY;
+
+        switch (angle) {
+          case 0: // Top-left diagonal (larger angle)
+            startX = -40; // Start from much farther left
+            startY = 5; // Start from higher up
+            finalX = 45; // Staggered final position (not exact center)
+            finalY = 40; // Staggered final position
+            break;
+          case 1: // Center-left horizontal
+            startX = -40; // Start from much farther left
+            startY = 50; // Start from middle
+            finalX = 42; // Staggered final position
+            finalY = 50; // Keep middle
+            break;
+          case 2: // Bottom-left diagonal (larger angle)
+            startX = -40; // Start from much farther left
+            startY = 95; // Start from lower down
+            finalX = 45; // Staggered final position
+            finalY = 60; // Staggered final position
+            break;
+          default:
+            startX = -40;
+            startY = 50;
+            finalX = 45;
+            finalY = 50;
+        }
+
+        // Interpolate from start position to staggered final position
+        const currentX = startX + moveProgress * (finalX - startX);
+        const currentY = startY + moveProgress * (finalY - startY);
+
+        return {
+          top: `${currentY}%`,
+          left: `${currentX}%`,
+          transform: "translate(-50%, -50%)",
+          opacity: 1,
+          zIndex: 30 + angle, // Different z-index for staggering
+        };
+      } else {
+        // 2 images from right at LARGER angles - with staggered final positions
+        let startX, startY, finalX, finalY;
+
+        switch (angle) {
+          case 0: // Top-right diagonal (larger angle)
+            startX = 140; // Start from much farther right
+            startY = 10; // Start from higher up
+            finalX = 55; // Staggered final position
+            finalY = 45; // Staggered final position
+            break;
+          case 1: // Bottom-right diagonal (larger angle)
+            startX = 140; // Start from much farther right
+            startY = 90; // Start from lower down
+            finalX = 58; // Staggered final position
+            finalY = 55; // Staggered final position
+            break;
+          default:
+            startX = 140;
+            startY = 50;
+            finalX = 55;
+            finalY = 50;
+        }
+
+        // Interpolate from start position to staggered final position
+        const currentX = startX + moveProgress * (finalX - startX);
+        const currentY = startY + moveProgress * (finalY - startY);
+
+        return {
+          top: `${currentY}%`,
+          left: `${currentX}%`,
+          transform: "translate(-50%, -50%)",
+          opacity: 1,
+          zIndex: 30 + angle + 3, // Different z-index for staggering
+        };
+      }
+    },
+    [animationProgress],
+  );
+
+  // Calculate text scale - starts shrinking later in the animation
+  const textScale = useMemo(() => {
+    const textShrinkStart = 0.3; // Text starts shrinking when animation is 30% complete
+    const textProgress = Math.max(0, (animationProgress - textShrinkStart) / (1 - textShrinkStart));
+    return Math.max(0.4, 1 - textProgress * 0.6); // Shrinks from 100% to 40% (smaller)
+  }, [animationProgress]);
+
+  // Keep section sticky only when in section area and animation not complete
+  const isAnimationComplete = animationProgress >= 1;
+  const stickyClass = shouldBeSticky && !isAnimationComplete ? "sticky top-0" : "relative";
+
+  return (
+    <section
+      ref={sectionRef}
+      className={`h-screen bg-white relative flex items-center justify-center overflow-hidden ${stickyClass}`}
+    >
+      {/* Central Text - 2 lines, bigger size, gradually shrinking */}
+      <div className="text-center z-10 relative">
+        <h2
+          className="text-7xl md:text-9xl lg:text-[12rem] font-bold text-orange-500 leading-[0.9]"
+          style={{
+            transform: `scale(${textScale})`,
+            transition: "transform 0.3s ease-out",
+          }}
+          aria-label="Unify Your Payments - Main heading"
+        >
+          <div>Unify Your</div>
+          <div>Payments</div>
+        </h2>
+      </div>
+
+      {/* Animated Images */}
+      {images.map((image, index) => (
+        <div
+          key={`${image.src}-${index}`}
+          className="absolute w-48 h-48 md:w-56 md:h-56"
+          style={{
+            ...getImagePosition(image.side, image.angle),
+            transition: "all 0.4s ease-out",
+            willChange: "transform, opacity",
+          }}
+          role="img"
+          aria-label={image.alt}
+        >
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 192px, 224px"
+            loading="eager"
+          />
+        </div>
+      ))}
+    </section>
+  );
+};
+
+const ThreeTextsSection = () => {
+  const [animationProgress, setAnimationProgress] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const sectionTop = rect.top;
+        const sectionHeight = rect.height;
+        const windowHeight = window.innerHeight;
+
+        // Start animation when section enters viewport
+        if (sectionTop <= windowHeight && sectionTop + sectionHeight >= 0) {
+          // Calculate how much of the section is visible
+          const visibleHeight = Math.min(windowHeight - Math.max(sectionTop, 0), sectionHeight);
+          const progress = Math.max(0, Math.min(1, visibleHeight / windowHeight));
+          setAnimationProgress(progress);
+        } else {
+          setAnimationProgress(0);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Calculate positions for each text based on scroll progress
+  const getTextPosition = useCallback(
+    (textIndex: number) => {
+      // Text appears at different stages: 0.1, 0.4, 0.7
+      const triggers = [0.1, 0.4, 0.7];
+      const trigger = triggers[textIndex];
+
+      if (animationProgress < trigger) {
+        // Text is below screen (not visible)
+        return {
+          transform: "translateY(200px)",
+          opacity: 0,
+          transition: "all 0.5s ease-out",
+        };
+      } else {
+        // Text is visible and moving to final position
+        const textProgress = Math.min(1, (animationProgress - trigger) / 0.3);
+
+        // Start positions (spread out) to end positions (with larger gaps)
+        const startY = 200 + textIndex * 100; // Start spread out: 200px, 300px, 400px
+        const endY = textIndex * 100; // End with larger gaps: 0px, 100px, 200px
+
+        const currentY = startY - textProgress * (startY - endY);
+
+        return {
+          transform: `translateY(${currentY}px)`,
+          opacity: 1,
+          transition: "all 0.5s ease-out",
+        };
+      }
+    },
+    [animationProgress],
+  );
+
+  return (
+    <>
+      {/* Main section that holds the animation */}
+      <section
+        ref={sectionRef}
+        className="h-screen bg-white relative flex flex-col items-center justify-start pt-32 overflow-hidden"
+      >
+        {/* Add Text - Green */}
+        <div className="absolute text-center z-10 left-1/2 transform -translate-x-1/2" style={getTextPosition(0)}>
+          <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold text-green-500 leading-[0.9]">Add</h2>
+        </div>
+
+        {/* Send Text - Blue */}
+        <div className="absolute text-center z-10 left-1/2 transform -translate-x-1/2" style={getTextPosition(1)}>
+          <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold text-blue-500 leading-[0.9]">Send</h2>
+        </div>
+
+        {/* Exchange Text - Reddish Pink */}
+        <div className="absolute text-center z-10 left-1/2 transform -translate-x-1/2" style={getTextPosition(2)}>
+          <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold text-pink-500 leading-[0.9]">Exchange</h2>
+        </div>
+      </section>
+
+      {/* Hidden spacer section to provide scroll distance for animation */}
+      <section className="h-[300vh] bg-white opacity-0 pointer-events-none" aria-hidden="true">
+        {/* This invisible section provides scroll distance for the sticky animation */}
+      </section>
+    </>
+  );
+};
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
   return (
-    <>
-      <div className="flex items-center flex-col grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
-          </div>
+    <ErrorBoundary>
+      {/* Hero Section with Background Video */}
+      <section className="min-h-screen relative overflow-hidden flex flex-col">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center">
+          {/* White background to fill empty spaces */}
+          <div className="absolute inset-0 bg-white"></div>
 
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="relative z-10 transform scale-75 rounded-2xl"
+            poster="/thumbnail.jpg"
+            onError={e => {
+              console.error("Video failed to load:", e);
+              // Fallback behavior could be implemented here
+            }}
+            onLoadStart={() => console.log("Video loading started")}
+            aria-label="Background video showing payment interface"
+          >
+            <source src="/hero2.mp4" type="video/mp4" />
+            <p>Your browser does not support the video tag. Please update your browser to view this content.</p>
+          </video>
+          {/* Ultra light overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-transparent z-20"></div>
         </div>
 
-        <div className="grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col md:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
+        {/* Transparent Navigation Overlay */}
+        <nav className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
+                <CpuChipIcon className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-orange-500">Agentic</span>
             </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="/" className="text-orange-400 hover:text-orange-300 transition-colors font-medium">
+                Home
+              </Link>
+              <Link href="/dashboard" className="text-orange-400 hover:text-orange-300 transition-colors font-medium">
+                Dashboard
+              </Link>
+              <Link href="/debug" className="text-orange-400 hover:text-orange-300 transition-colors font-medium">
+                Debug
+              </Link>
+            </div>
+
+            {/* Wallet Connection */}
+            <div className="flex items-center gap-4">
+              {connectedAddress ? (
+                <div className="hidden sm:flex items-center gap-2 glass-card px-4 py-2 backdrop-blur-lg bg-white/10 border border-white/20 rounded-xl">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-orange-400 text-sm font-medium">
+                    {connectedAddress.slice(0, 6)}...{connectedAddress.slice(-4)}
+                  </span>
+                </div>
+              ) : (
+                <button className="btn btn-primary btn-sm px-6 rounded-xl">Connect Wallet</button>
+              )}
+
+              {/* Mobile Menu Button */}
+              <button className="md:hidden text-orange-400 p-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        {/* Content Overlay */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex items-end pb-20">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-end w-full">
+            {/* Left column - Main Heading */}
+            <div className="space-y-8" style={{ animation: "slideUp 0.8s ease-out" }}>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="text-white drop-shadow-lg">
+                  One agent
+                  <br />
+                  for all payments
+                </span>
+              </h1>
+
+              {/* Connected wallet display */}
+              {connectedAddress && (
+                <div
+                  className="glass-card p-6 max-w-md backdrop-blur-lg bg-white/10 border border-white/20"
+                  style={{ animation: "fadeIn 1s ease-out 0.3s both" }}
+                >
+                  <p className="text-sm text-white/70 mb-2">Connected Wallet</p>
+                  <div className="text-white">
+                    <Address address={connectedAddress} />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right column - Description */}
+            <div className="space-y-6 lg:text-right" style={{ animation: "slideUp 0.8s ease-out 0.2s both" }}>
+              <p className="text-xl md:text-2xl text-white/95 leading-relaxed drop-shadow-md">
+                Autonomous AI-powered stablecoin payments across chains without human intervention.
               </p>
             </div>
           </div>
         </div>
-      </div>
-    </>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70 animate-bounce">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </div>
+      </section>
+
+      {/* Unify Section */}
+      <UnifySection />
+
+      {/* Three Texts Section - Add, Send, Exchange */}
+      <ThreeTextsSection />
+
+      {/* New Orange-Reddish Section */}
+      <section className="h-screen bg-gradient-to-br from-orange-500 to-red-500 relative">
+        <div className="container mx-auto px-6 h-full flex items-center justify-center">
+          <div className="text-center text-white">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6">Ready to Get Started?</h2>
+            <p className="text-xl md:text-2xl opacity-90">Join the future of autonomous payments</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Extended blank space for scrolling */}
+      <section className="h-[200vh] bg-white"></section>
+    </ErrorBoundary>
   );
 };
 
