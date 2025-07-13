@@ -8,6 +8,7 @@ import { useAccount } from "wagmi";
 import { CpuChipIcon } from "@heroicons/react/24/outline";
 import ErrorBoundary from "~~/components/ErrorBoundary";
 import { Address } from "~~/components/scaffold-eth";
+import { DemoSection } from "~~/components/DemoSection";
 
 const UnifySection = () => {
   const [animationProgress, setAnimationProgress] = useState(0);
@@ -487,6 +488,9 @@ const Home: NextPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Live Demo Section */}
+      <DemoSection />
 
       {/* Features Section */}
       <section className="bg-white py-20">

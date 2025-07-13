@@ -1,80 +1,62 @@
 import React from "react";
 import Link from "next/link";
-import { hardhat } from "viem/chains";
-import { CurrencyDollarIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { HeartIcon } from "@heroicons/react/24/outline";
-import { SwitchTheme } from "~~/components/SwitchTheme";
-import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
-import { Faucet } from "~~/components/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useGlobalState } from "~~/services/store/store";
 
 /**
  * Site footer
  */
 export const Footer = () => {
-  const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
-  const { targetNetwork } = useTargetNetwork();
-  const isLocalNetwork = targetNetwork.id === hardhat.id;
 
   return (
-    <div className="min-h-0 py-5 px-1 mb-11 lg:mb-0">
-      <div>
-        <div className="fixed flex justify-between items-center w-full z-10 p-4 bottom-0 left-0 pointer-events-none">
-          <div className="flex flex-col md:flex-row gap-2 pointer-events-auto">
-            {nativeCurrencyPrice > 0 && (
-              <div>
-                <div className="btn btn-primary btn-sm font-normal gap-1 cursor-auto">
-                  <CurrencyDollarIcon className="h-4 w-4" />
-                  <span>{nativeCurrencyPrice.toFixed(2)}</span>
-                </div>
-              </div>
-            )}
-            {isLocalNetwork && (
-              <>
-                <Faucet />
-                <Link href="/blockexplorer" passHref className="btn btn-primary btn-sm font-normal gap-1">
-                  <MagnifyingGlassIcon className="h-4 w-4" />
-                  <span>Block Explorer</span>
-                </Link>
-              </>
-            )}
+    <footer className="bg-gray-800 text-white py-10">
+      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* About Us */}
+        <div>
+          <h3 className="text-xl font-bold mb-4">About Us</h3>
+          <p className="text-gray-400">
+            Agentic Stablecoin is an autonomous AI agent for stablecoin payments, enabling seamless machine-to-machine commerce.
+          </p>
+        </div>
+
+        {/* Quick Links */}
+        <div>
+          <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+          <ul className="space-y-2">
+            <li>
+              <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link href="/debug" className="text-gray-400 hover:text-white transition-colors">
+                Debug
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact Us */}
+        <div>
+          <h3 className="text-xl font-bold mb-4">Contact Us</h3>
+          <p className="text-gray-400">Email: info@agenticstablecoin.com</p>
+          <div className="flex space-x-4 mt-4">
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <i className="fab fa-twitter"></i> {/* Placeholder for Twitter icon */}
+            </a>
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <i className="fab fa-linkedin"></i> {/* Placeholder for LinkedIn icon */}
+            </a>
           </div>
-          <SwitchTheme className={`pointer-events-auto ${isLocalNetwork ? "self-end md:self-auto" : ""}`} />
         </div>
       </div>
-      <div className="w-full">
-        <ul className="menu menu-horizontal w-full">
-          <div className="flex justify-center items-center gap-2 text-sm w-full">
-            <div className="text-center">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
-                Fork me
-              </a>
-            </div>
-            <span>·</span>
-            <div className="flex justify-center items-center gap-2">
-              <p className="m-0 text-center">
-                Built with <HeartIcon className="inline-block h-4 w-4" /> at
-              </p>
-              <a
-                className="flex justify-center items-center gap-1"
-                href="https://buidlguidl.com/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
-                <span className="link">BuidlGuidl</span>
-              </a>
-            </div>
-            <span>·</span>
-            <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Support
-              </a>
-            </div>
-          </div>
-        </ul>
+
+      <div className="text-center text-gray-500 mt-8">
+        &copy; {new Date().getFullYear()} Agentic Stablecoin. All rights reserved.
       </div>
-    </div>
+    </footer>
   );
 };
