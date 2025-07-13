@@ -40,7 +40,7 @@ export const DemoSection = () => {
       const analyticsData = await api.getCostAnalytics('demo-user');
       setAnalytics(analyticsData);
     } catch (_error) {
-      console.error('Failed to load initial data:', error);
+      console.error('Failed to load initial data:', _error);
     }
   };
 
@@ -64,7 +64,7 @@ export const DemoSection = () => {
 
       console.log('Service request created:', serviceRequest);
     } catch (_error) {
-      console.error('Weather API test failed:', error);
+      console.error('Weather API test failed:', _error);
     } finally {
       setIsLoading(false);
     }

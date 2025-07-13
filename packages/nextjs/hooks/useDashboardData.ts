@@ -33,8 +33,8 @@ export function useDashboardData(): DashboardData & DashboardActions {
     try {
       const [overview, providers, transactions, analytics] = await Promise.all([
         get('health'),
-        get('providers'),
-        get('service-requests?userId=test-user'), // TODO: Replace with real user ID
+        get('providers') as Promise<any[]>,
+        get('service-requests?userId=test-user') as Promise<any[]>, // TODO: Replace with real user ID
         get('analytics/costs/test-user') // TODO: Replace with real user ID
       ]);
 
