@@ -1,0 +1,73 @@
+type OptimizationSettings = record {
+  max_cost_per_transaction : nat64;
+  preferred_chains : vec text;
+  reliability_threshold : float64;
+  auto_optimization_enabled : bool;
+  rebalance_frequency : nat64;
+};
+
+type PaymentRequest = record {
+  id : text;
+  provider_id : text;
+  chain : text;
+  amount : nat64;
+  recipient : text;
+  metadata : text;
+  timestamp : nat64;
+  status : PaymentStatus;
+};
+
+type PaymentStatus = variant {
+  Pending;
+  Processing;
+  Completed;
+  Failed;
+  Cancelled;
+};
+
+type RebalancingSuggestion = record {
+  from_chain : text;
+  to_chain : text;
+  reason : text;
+  potential_savings : float64;
+};
+
+type ServiceProvider = record {
+  id : text;
+  name : text;
+  api_endpoint : text;
+  supported_chains : vec text;
+  cost_per_request : nat64;
+  reliability_score : float64;
+  last_ping : nat64;
+  is_active : bool;
+};
+
+type UsageMetrics = record {
+  total_requests : nat64;
+  successful_payments : nat64;
+  failed_payments : nat64;
+  total_volume : nat64;
+  average_response_time : float64;
+  cost_efficiency : float64;
+};
+
+service : {
+  add_authorized_principal : (principal) -> (variant { Ok : text; Err : text });
+  cancel_payment : (text) -> (variant { Ok : text; Err : text });
+  deactivate_service_provider : (text) -> (variant { Ok : text; Err : text });
+  get_payment_status : (text) -> (opt PaymentStatus) query;
+  get_rebalancing_suggestions : () -> (vec RebalancingSuggestion) query;
+  get_service_provider : (text) -> (opt ServiceProvider) query;
+  get_usage_metrics : (nat64) -> (UsageMetrics) query;
+  health_check : () -> (text) query;
+  list_pending_payments : () -> (vec PaymentRequest) query;
+  list_service_providers : () -> (vec ServiceProvider) query;
+  optimize_payment_route : (text, nat64) -> (opt text) query;
+  process_payment : (text) -> (variant { Ok : text; Err : text });
+  record_payment_usage : (text, text, nat64, bool, float64) -> (variant { Ok : text; Err : text });
+  register_service_provider : (ServiceProvider) -> (variant { Ok : text; Err : text });
+  remove_authorized_principal : (principal) -> (variant { Ok : text; Err : text });
+  submit_payment : (PaymentRequest) -> (variant { Ok : text; Err : text });
+  update_optimization_settings : (OptimizationSettings) -> (variant { Ok : text; Err : text });
+}

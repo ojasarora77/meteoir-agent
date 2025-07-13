@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "canisters": {
+    "agentic_stablecoin": {
+      "type": "rust",
+      "package": "agentic_stablecoin",
+      "candid": "agentic_stablecoin.did"
+    }
+  }
+}
