@@ -356,7 +356,7 @@ const Home: NextPage = () => {
               <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
                 <CpuChipIcon className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-orange-500">Agentic</span>
+              <span className="text-xl font-bold text-orange-500">MeteoirAgent</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -425,7 +425,7 @@ const Home: NextPage = () => {
             {/* Right column - Description */}
             <div className="space-y-6 lg:text-right" style={{ animation: "slideUp 0.8s ease-out 0.2s both" }}>
               <p className="text-xl md:text-2xl text-white/95 leading-relaxed drop-shadow-md">
-                Autonomous AI-powered stablecoin payments across chains without human intervention.
+                Autonomous AI-powered cross-chain payments with intelligent optimization.
               </p>
             </div>
           </div>
@@ -499,7 +499,7 @@ const Home: NextPage = () => {
             <div className="bg-orange-500 text-white p-8 rounded-lg">
               <h3 className="text-2xl font-bold mb-4">Autonomous Payments</h3>
               <p>
-                Connects to service APIs and executes payments instantly via stablecoins. Schedules, negotiates, and
+                Connects to service APIs and executes payments instantly via crypto. Schedules, negotiates, and
                 optimizes microtransactions.
               </p>
             </div>

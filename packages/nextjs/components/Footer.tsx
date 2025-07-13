@@ -13,7 +13,7 @@ export const Footer = () => {
         <div>
           <h3 className="text-xl font-bold mb-4">About Us</h3>
           <p className="text-gray-400">
-            Agentic Stablecoin is an autonomous AI agent for stablecoin payments, enabling seamless machine-to-machine commerce.
+            MeteoirAgent is an autonomous AI agent for cross-chain payments, enabling seamless machine-to-machine commerce.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export const Footer = () => {
         {/* Contact Us */}
         <div>
           <h3 className="text-xl font-bold mb-4">Contact Us</h3>
-          <p className="text-gray-400">Email: info@agenticstablecoin.com</p>
+          <p className="text-gray-400">Email: info@meteoragent.com</p>
           <div className="flex space-x-4 mt-4">
             <a href="#" className="text-gray-400 hover:text-white transition-colors">
               <i className="fab fa-twitter"></i> {/* Placeholder for Twitter icon */}
@@ -55,7 +55,7 @@ export const Footer = () => {
       </div>
 
       <div className="text-center text-gray-500 mt-8">
-        &copy; {new Date().getFullYear()} Agentic Stablecoin. All rights reserved.
+        &copy; {new Date().getFullYear()} MeteoirAgent. All rights reserved.
       </div>
     </footer>
   );

@@ -1,5 +1,5 @@
 {
-  "name": "@agentic-stablecoin/backend",
+  "name": "@meteoir-agent/backend",
   "version": "1.0.0",
   "description": "Backend infrastructure for autonomous AI payment agent",
   "main": "index.js",

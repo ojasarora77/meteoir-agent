@@ -1,0 +1,39 @@
+{
+  "name": "@meteoir-agent/ai-agent",
+  "version": "1.0.0",
+  "description": "Autonomous AI Agent for Cross-Chain Payments",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node src/test.js",
+    "test:integration": "node src/test-integration.js",
+    "test:network": "node src/test-network.js",
+    "test:efficient": "node src/test-efficient.js",
+    "test:budget-comparison": "node src/budget-comparison.js",
+    "set-budget": "cd ../hardhat && npm run set-budget",
+    "install:deps": "npm install"
+  },
+  "dependencies": {
+    "@dfinity/agent": "^1.4.0",
+    "@dfinity/candid": "^1.4.0",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "ml-matrix": "^6.11.0",
+    "ml-regression": "^5.0.0",
+    "node-cron": "^3.0.3",
+    "ws": "^8.18.0"
+  },
+  "keywords": [
+    "ai",
+    "autonomous",
+    "payments",
+    "blockchain",
+    "rei-network",
+    "icp"
+  ],
+  "author": "MeteoirAgent Team",
+  "license": "MIT"
+}
